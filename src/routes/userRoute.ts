@@ -10,10 +10,10 @@ import asyncMiddleware from "../middlewares/asyncMiddleware.js";
 const router = express.Router();
 const BASE_ROUTE = "/user";
 
-router.get("/:user_email", asyncMiddleware(GetUserDetails));
+router.get("/", asyncMiddleware(GetUserDetails));
 router.post("/", asyncMiddleware(CreateUser));
-router.get("/getCart/:user_id", asyncMiddleware(GetUserCart));
-router.put("/updateCart/:user_id", UpdateUserCart);
+router.get("/get-cart", asyncMiddleware(GetUserCart));
+router.put("/update-cart", asyncMiddleware(UpdateUserCart));
 
 const MODULE = {
   router,

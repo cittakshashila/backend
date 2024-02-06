@@ -1,59 +1,39 @@
 -- CREATE DATABASE tk;
 -- USE tk;
 
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 CREATE TABLE users (
-    user_id SERIAL PRIMARY KEY,
+    id UUID DEFAULT uuid_generate_v4(),
     name VARCHAR(50),
-    email VARCHAR(50) UNIQUE,
+    email VARCHAR(50),
     clg_name VARCHAR(100),
-    phone_no VARCHAR(20)
+    phone_no VARCHAR(20),
+    PRIMARY KEY(id),
+    UNIQUE (email)
+);
+
+CREATE TABLE pass (
+    id VARCHAR(10) PRIMARY KEY,
+    name VARCHAR(10),
+    Date DATE
 );
 
 CREATE TABLE events (
+    id VARCHAR(10) PRIMARY KEY,
     name VARCHAR(100),
-    event_id SERIAL PRIMARY KEY,
-    description TEXT,
-    tag_line TEXT,
-    rules TEXT,
-    img_link TEXT,
-    date DATE,
-    team_size INTEGER,
-    fee INTEGER,
-    youtube TEXT,
-    instagram TEXT,
-    first_prize INTEGER,
-    second_prize INTEGER,
-    third_prize INTEGER
-);
-
-CREATE TABLE incharges (
-    incharge_id SERIAL PRIMARY KEY,
-    name VARCHAR(50),
-    phone_no VARCHAR(20)
-);
-
-CREATE TABLE incharge_event (
-    id SERIAL PRIMARY KEY,
-    event_id INTEGER,
-    incharge_id INTEGER,
-    FOREIGN KEY (event_id) REFERENCES events (event_id),
-    FOREIGN KEY (incharge_id) REFERENCES incharges (incharge_id)
-);
-
-CREATE TABLE batch (
-    batch_id SERIAL PRIMARY KEY,
-    event_id INTEGER,
-    venue TEXT,
-    date DATE,
-    reg_count INTEGER,
-    FOREIGN KEY (event_id) REFERENCES events(event_id)
+    fee INTEGER DEFAULT 0,
+    password VARCHAR,
+    pass_id VARCHAR(10),
+    FOREIGN KEY (pass_id) REFERENCES pass(id)
 );
 
 CREATE TABLE users_events (
-    event_id INTEGER,
-    user_id INTEGER,
-    is_present BOOLEAN,
-    paid BOOLEAN,
-    FOREIGN KEY (event_id) REFERENCES events(event_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    event_id VARCHAR,
+    user_email VARCHAR,
+    is_present BOOLEAN DEFAULT false,
+    paid BOOLEAN DEFAULT false,
+    FOREIGN KEY (event_id) REFERENCES events(id),
+    FOREIGN KEY (user_email) REFERENCES users(email),
+    PRIMARY KEY (event_id, user_email)
 );

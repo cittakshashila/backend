@@ -5,9 +5,9 @@ import pkg from "pg";
 const { Pool } = pkg;
 
 export const pool = new Pool({
-  user: process.env.DB_USER,
+  user: "postgres",
   host: process.env.DB_HOST || 'localhost',
-  database: "takshashila",
-  password: process.env.DB_PASS,
-  port: 5505,
+  database: "tk_backend",
+  password: "bharath2974",
+  port: 5432,
 });

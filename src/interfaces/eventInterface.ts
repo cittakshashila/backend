@@ -16,6 +16,7 @@ export type Events = {
   "inchar_id": number;
   "incharge_name": string;
   "phone_no": string;
+  "is_paid" : boolean;
 };
 
 export type EventsHome = {
@@ -26,3 +27,8 @@ export type EventsHome = {
   "img_link": string;
   "date": string;
 };
+
+export type tokenAdminToken = {
+  "is_event_admin" : boolean,
+  "event_id" : string
+}

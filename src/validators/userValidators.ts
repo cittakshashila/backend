@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const UserSchema = z
   .object({
-    user_id: z.number(),
+    id: z.string(),
     name: z
       .string({
         required_error: "Name is required",
@@ -21,13 +21,13 @@ const UserSchema = z
       .length(10, "Mobile number should be 10 digits long"),
   });
 
-const createUserValidator = UserSchema.omit({ user_id: true });
-const getUserValidator = UserSchema.pick({ email: true });
-const getUserCartValidator = UserSchema.pick({ user_id: true });
+const createUserValidator = UserSchema.omit({ id: true, email: true });
+const emailValidator = UserSchema.pick({ email: true });
+const uuidValidator = UserSchema.pick({ id : true });
 
 export {
   createUserValidator,
-  getUserCartValidator,
-  getUserValidator,
+  emailValidator,
+  uuidValidator,
   UserSchema,
 };

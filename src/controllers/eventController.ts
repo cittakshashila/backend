@@ -1,6 +1,11 @@
-import { Request, Response } from "express";
+import { Response,
+    Request
+} from "express";
 import { pool } from "../../config/db.js";
-import { Events, EventsHome } from "../interfaces/eventInterface.js";
+import { 
+    Events,
+    EventsHome 
+} from "../interfaces/eventInterface.js";
 import {
   createEvent,
   deleteEvent,
@@ -23,6 +28,7 @@ const eventProperties = [
   "first_prize",
   "second_prize",
   "third_prize",
+  "is_paid",
 ];
 
 const GetAllEvents = async (req: Request, res: Response) => {
@@ -30,7 +36,7 @@ const GetAllEvents = async (req: Request, res: Response) => {
   const result = await client.query(getAllEvents);
   const events: Array<EventsHome> = result.rows;
   client.release();
-  return res.send({ events, status });
+  return res.send({ events, "status" : 200 });
 };
 
 const GetSpecificEvent = async (req: Request, res: Response) => {
@@ -74,12 +80,11 @@ const UpdateEvent = async (req: Request, res: Response) => {
   const sql_arr = eventProperties.map((props) => eventData[props]);
   if (id) {
     await client.query(updateEvent, [...sql_arr, id])
-      .then(() => {
-        client.release();
-      });
+    client.release();
     return res.json({ "status": 200 });
   } else return res.json({ "status": 400 });
 };
+
 
 export {
   CreateEvent,

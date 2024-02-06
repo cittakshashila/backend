@@ -18,16 +18,6 @@ router.post("/", asyncMiddleware(CreateEvent));
 router.delete("/:id", asyncMiddleware(DeleteEvent));
 router.put("/:id", asyncMiddleware(UpdateEvent));
 
-// router.put("/incharge/:id",(req,res)=>{
-//     const { id } = req.params
-//     try{
-//
-//     } catch(err){
-//         console.log(err)
-//         return res.send({"status":500})
-//     }
-// })
-
 const MODULE: Module = {
   router,
   BASE_ROUTE,
