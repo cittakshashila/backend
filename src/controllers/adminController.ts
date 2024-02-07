@@ -46,7 +46,8 @@ const UserSignUp = async (req: Request, res: Response) => {
   await client.query(insertAdmin, [uname, hashedPass])
   client.release()
   return res.send({"status": 200})
-}
+};
+
 const UserLogIn = async (req: Request, res: Response, next: NextFunction) => {
   const {uname, password} = req.body
   const client = await pool.connect()

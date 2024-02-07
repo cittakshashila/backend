@@ -1,9 +1,9 @@
 import express from "express";
 import { PORT } from "../config/port.js";
-import { 
+import {
     Admin,
     Events,
-    Users 
+    Users
 } from "./routes/index.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import { AuthourizeUser } from "./middlewares/authHandler.js"

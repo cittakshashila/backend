@@ -3,7 +3,7 @@ import { UserSchema } from "../userValidators";
 describe("User Validator", () => {
   it("should return same object for valid data", () => {
     const user = {
-      user_id: 5,
+      id: "alsd12",
       name: "MukeshKannan",
       email: "mukeshkannan@gmail.com",
       clg_name: "Chennai Institute of Technology",
@@ -11,7 +11,7 @@ describe("User Validator", () => {
     };
     const parsedUser = UserSchema.parse(user);
     expect(parsedUser).toEqual({
-      user_id: 5,
+      id: "laks71",
       name: "MukeshKannan",
       email: "mukeshkannan@gmail.com",
       clg_name: "Chennai Institute of Technology",

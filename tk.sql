@@ -37,3 +37,8 @@ CREATE TABLE users_events (
     FOREIGN KEY (user_email) REFERENCES users(email),
     PRIMARY KEY (event_id, user_email)
 );
+
+CREATE TABLE admin (
+    uname VARCHAR(10) PRIMARY KEY,
+    password VARCHAR
+);

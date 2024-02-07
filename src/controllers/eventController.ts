@@ -85,7 +85,6 @@ const UpdateEvent = async (req: Request, res: Response) => {
   } else return res.json({ "status": 400 });
 };
 
-
 export {
   CreateEvent,
   DeleteEvent,
