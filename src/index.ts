@@ -1,12 +1,8 @@
 import express from "express";
 import { PORT } from "../config/port.js";
-import {
-    Admin,
-    Events,
-    Users
-} from "./routes/index.js";
+import { Admin, Events, Users } from "./routes/index.js";
 import errorHandler from "./middlewares/errorHandler.js";
-import { AuthourizeUser } from "./middlewares/authHandler.js"
+import { AuthourizeUser } from "./middlewares/authHandler.js";
 
 const app = express();
 

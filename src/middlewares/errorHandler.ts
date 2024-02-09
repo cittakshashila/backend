@@ -3,11 +3,11 @@ import { ZodError } from "zod";
 
 function errorHandler(
   err: Errback,
-  req: Request,
+  _: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) {
-    console.log(err)
+  console.log(err);
   if (err instanceof ZodError) {
     return res.status(400).json({
       message: "Error From Zod",
