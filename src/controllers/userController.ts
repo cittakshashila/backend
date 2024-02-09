@@ -1,5 +1,5 @@
 import { pool } from "../../config/db.js";
-import { PostgresError } from "../interfaces/userInterface.js";
+import { cartType, PostgresError } from "../interfaces/userInterface.js";
 import {
   begin,
   commit,
@@ -24,7 +24,7 @@ const GetUserDetails = async (req: Request, res: Response) => {
   const {email} = emailValidator.parse(req.body.user);
   const client = await pool.connect();
   const result = await client.query(getUserDetails, [email]);
-  return res.send({ data: result.rows, "status": 200 });
+  return res.status(200).send(result.rows)
 };
 
 const CreateUser = async (req: Request, res: Response) => {
@@ -36,7 +36,7 @@ const CreateUser = async (req: Request, res: Response) => {
     .then(() => {
       client.release();
     });
-  return res.send({ "status": 200 });
+  return res.status(200).send("User Created")
 };
 
 const GetUserCart = async (
@@ -46,7 +46,13 @@ const GetUserCart = async (
   const {email} = emailValidator.parse(req.body.user);
   const client = await pool.connect();
   const data = await client.query(getCart,[email])
-  return res.send({"status": 200, "data" : data.rows});
+  let cartItems : Record<string, Array<cartType>> = {}
+      data.rows.forEach((event : cartType) =>{
+    if(!cartItems[event.pass_id])
+      cartItems[event.pass_id] = []
+    cartItems[event.pass_id].push(event)
+  })
+  return res.status(200).send(cartItems);
 };
 
 const UpdateUserCart = async (
@@ -63,15 +69,15 @@ const UpdateUserCart = async (
     await client.query(insertMissingOnes,[email,events_id])
     await client.query(deleteFromCart,[email,events_id])
     await client.query(commit)
-    return res.send({"status":200})
+    return res.status(200)
   } catch (err) {
     await client.query(rollback);
     if (err && ((err as PostgresError).code === "23503")) {
       console.log(err)
-      return res.send({ "status": 404 });
+      return res.status(404)
     }
     next(err)
-    return res.send({"status":500})
+    return res.status(404)
   }
 };
 

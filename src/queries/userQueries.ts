@@ -14,7 +14,10 @@ export const getCart: string =
   `SELECT
     ue.event_id,
     e.name,
-    p.name,
+    e.fee,
+    ue.paid,
+    ue.is_present,
+    p.id AS pass_id,
     ue.user_email
 FROM users_events ue
 JOIN events e ON ue.event_id = e.id
