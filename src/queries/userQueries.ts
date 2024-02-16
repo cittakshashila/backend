@@ -1,5 +1,4 @@
-export const createUser: string =
-  `INSERT INTO users (name,email,phone_no,clg_name) VALUES ($1,$2,$3,$4)`;
+export const createUser: string = `INSERT INTO users (name,email,phone_no,clg_name) VALUES ($1,$2,$3,$4)`;
 export const getUserDetails: string = `SELECT * FROM users WHERE email=$1`;
 export const deleteFromCart: string = `
     DELETE FROM users_events
@@ -10,8 +9,7 @@ export const insertMissingOnes: string = `
     INSERT INTO users_events (user_email, event_id)
     SELECT $1::varchar, unnest($2::varchar[])
     ON CONFLICT (event_id, user_email) DO NOTHING`;
-export const getCart: string =
-  `SELECT
+export const getCart: string = `SELECT
     ue.event_id,
     e.name,
     e.fee,

@@ -1,11 +1,6 @@
-import { Response,
-    Request
-} from "express";
+import { Response, Request } from "express";
 import { pool } from "../../config/db.js";
-import { 
-    Events,
-    EventsHome 
-} from "../interfaces/eventInterface.js";
+import { Events, EventsHome } from "../interfaces/eventInterface.js";
 import {
   createEvent,
   deleteEvent,
@@ -13,7 +8,9 @@ import {
   getEventDetails,
   updateEvent,
 } from "../queries/eventQueries.js";
-
+import {
+  EventIdValidator,
+} from "../validators/eventValidators.js";
 const eventProperties = [
   "name",
   "description",
@@ -31,7 +28,7 @@ const eventProperties = [
   "is_paid",
 ];
 
-const GetAllEvents = async (req: Request, res: Response) => {
+const GetAllEvents = async (_: Request, res: Response) => {
   const client = await pool.connect();
   const result = await client.query(getAllEvents);
   const events: Array<EventsHome> = result.rows;
@@ -40,7 +37,7 @@ const GetAllEvents = async (req: Request, res: Response) => {
 };
 
 const GetSpecificEvent = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = EventIdValidator.parse(req.params.id);
   const client = await pool.connect();
   const result = await client.query(getEventDetails, [id]);
   const events: Array<Events> = result.rows;
@@ -50,36 +47,34 @@ const GetSpecificEvent = async (req: Request, res: Response) => {
 
 const CreateEvent = async (req: Request, res: Response) => {
   const client = await pool.connect();
-  const eventData = { ...req.body };
-  const sql_arr = eventProperties.map((props) => eventData[props]);
+  const eventData = req.body;
+  const sql_arr = eventProperties.map((prop) => eventData[prop]);
   if (eventData.name) {
-    await client.query(createEvent, sql_arr)
-      .then(() => {
-        client.release();
-      });
+    await client.query(createEvent, sql_arr).then(() => {
+      client.release();
+    });
     return res.json({ "status": 200 });
   } else return res.json({ "status": 400 });
 };
 
 const DeleteEvent = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = EventIdValidator.parse(req.params.id);
   if (id) {
     const client = await pool.connect();
-    await client.query(deleteEvent, [id])
-      .then(() => {
-        client.release();
-      });
+    await client.query(deleteEvent, [id]).then(() => {
+      client.release();
+    });
     return res.send({ "status": 200 });
   } else res.send({ "status": 400 });
 };
 
 const UpdateEvent = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = EventIdValidator.parse(req.params.id);
   const client = await pool.connect();
   const eventData = { ...req.body };
   const sql_arr = eventProperties.map((props) => eventData[props]);
   if (id) {
-    await client.query(updateEvent, [...sql_arr, id])
+    await client.query(updateEvent, [...sql_arr, id]);
     client.release();
     return res.json({ "status": 200 });
   } else return res.json({ "status": 400 });
