@@ -5,19 +5,24 @@ function errorHandler(
   err: Errback,
   _: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
-  console.log(err);
   if (err instanceof ZodError) {
     return res.status(400).json({
-      message: "Error From Zod",
-      error: err,
+      status: 400,
+      body: {
+        message: "Error From Zod",
+        error: err,
+      },
     });
   }
 
   return res.status(500).json({
-    message: "Something Wrong with the server",
-    error: err,
+    statusCode: 500,
+    body: {
+      message: "Something Wrong with the server",
+      error: err,
+    },
   });
 }
 

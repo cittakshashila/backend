@@ -8,9 +8,7 @@ import {
   getEventDetails,
   updateEvent,
 } from "../queries/eventQueries.js";
-import {
-  EventIdValidator,
-} from "../validators/eventValidators.js";
+import { EventIdValidator } from "../validators/eventValidators.js";
 const eventProperties = [
   "name",
   "description",
@@ -33,7 +31,10 @@ const GetAllEvents = async (_: Request, res: Response) => {
   const result = await client.query(getAllEvents);
   const events: Array<EventsHome> = result.rows;
   client.release();
-  return res.send({ events, "status" : 200 });
+
+  return res
+    .status(200)
+    .json({ status: 200, body: { message: "Sucessfull", events } });
 };
 
 const GetSpecificEvent = async (req: Request, res: Response) => {
@@ -42,7 +43,10 @@ const GetSpecificEvent = async (req: Request, res: Response) => {
   const result = await client.query(getEventDetails, [id]);
   const events: Array<Events> = result.rows;
   client.release();
-  return res.send({ events, "status": 200 });
+
+  return res
+    .status(200)
+    .send({ status: 200, body: { message: "Sucessfull", events } });
 };
 
 const CreateEvent = async (req: Request, res: Response) => {
@@ -53,8 +57,14 @@ const CreateEvent = async (req: Request, res: Response) => {
     await client.query(createEvent, sql_arr).then(() => {
       client.release();
     });
-    return res.json({ "status": 200 });
-  } else return res.json({ "status": 400 });
+
+    return res
+      .status(200)
+      .json({ status: 200, body: { message: "Sucessfull" } });
+  } else
+    return res
+      .status(400)
+      .json({ status: 400, body: { message: "BadRequest" } });
 };
 
 const DeleteEvent = async (req: Request, res: Response) => {
@@ -64,8 +74,13 @@ const DeleteEvent = async (req: Request, res: Response) => {
     await client.query(deleteEvent, [id]).then(() => {
       client.release();
     });
-    return res.send({ "status": 200 });
-  } else res.send({ "status": 400 });
+    return res
+      .status(200)
+      .json({ status: 200, body: { message: "Sucessfull" } });
+  } else
+    return res
+      .status(400)
+      .json({ status: 400, body: { message: "BadRequest" } });
 };
 
 const UpdateEvent = async (req: Request, res: Response) => {
@@ -76,8 +91,14 @@ const UpdateEvent = async (req: Request, res: Response) => {
   if (id) {
     await client.query(updateEvent, [...sql_arr, id]);
     client.release();
-    return res.json({ "status": 200 });
-  } else return res.json({ "status": 400 });
+
+    return res
+      .status(200)
+      .json({ status: 200, body: { message: "Sucessfull" } });
+  } else
+    return res
+      .status(400)
+      .json({ status: 400, body: { message: "BadRequest" } });
 };
 
 export {

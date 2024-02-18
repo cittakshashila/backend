@@ -8,12 +8,15 @@ import { NextFunction, Response, Request } from "express";
 export const AuthourizeAdmin = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const authHeader = req.headers["authorization"];
   const token: string = (authHeader && authHeader.split(" ")[1]) || "";
   jwt.verify(token, SECRET, (err, data) => {
-    if (err) return res.send({ status: 403 });
+    if (err)
+      return res
+        .status(403)
+        .json({ statusCode: 403, body: { message: "Forbidden" } });
     req.body.admin = data;
     next();
   });
@@ -22,7 +25,7 @@ export const AuthourizeAdmin = (
 export const AuthourizeUser = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const authHeader = req.headers["authorization"];
   const token: string = (authHeader && authHeader.split(" ")[1]) || "";
@@ -32,7 +35,9 @@ export const AuthourizeUser = async (
     req.body.user = { email: response.data.email };
     next();
   } catch (err) {
-    return res.status(401).send("Bad Token")
+    return res
+      .status(401)
+      .json({ statusCode: 401, body: { message: "You are not authorized" } });
   }
 };
 
@@ -42,7 +47,10 @@ export const CreateAdminToken = async (req: Request, res: Response) => {
     user: { email: req.body.uname },
   };
   const token: string = jwt.sign(tokenData, SECRET);
-  return res.send({ token: token });
+  return res.status(200).json({
+    statusCode: 200,
+    body: { message: "Token Generated Sucessfully", token: token },
+  });
 };
 
 export const CreateEventAdminToken = async (req: Request, res: Response) => {
@@ -51,5 +59,8 @@ export const CreateEventAdminToken = async (req: Request, res: Response) => {
     event_id: req.body.event_id,
   };
   const token: string = jwt.sign(tokenData, SECRET);
-  return res.send({ token: token });
+  return res.status(200).json({
+    statusCode: 200,
+    body: { message: "Token Generated Sucessfully", token: token },
+  });
 };
