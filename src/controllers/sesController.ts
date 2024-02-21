@@ -257,7 +257,7 @@ const Emergency = async (req: Request, res: Response) => {
                     <tr style="height: 15vh">
                        <td>&nbsp;</td>
                        <td colspan="2" align="center">
-                          <img src="https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/tk.logo" alt="logo"/>
+                          <img src="https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/tklogo.png" alt="logo"/>
                        </td>
                        <td>&nbsp;</td>
                     </tr>
@@ -329,4 +329,90 @@ const Emergency = async (req: Request, res: Response) => {
     });
 }
 
-export {Registered, Paid, Emergency };
+const Sendotp = async (req: Request, res: Response) => {
+    const {otp,email} = req.body;
+    transporter.sendMail({
+        from: process.env.VERIFIED_EMAIL,
+        to: process.env.VERIFIED_EMAIL,
+        bcc: email,
+        subject: `OTP`,
+        html: `<html>
+           <body style="width: 900px; padding: 0; margin: 0; box-sizing: border-box">
+              <div style="background: gray; padding: 4%">
+                 <table id="content" colspan="4" style="background: white; width: 100%">
+                    <tr style="height: 15vh">
+                       <td>&nbsp;</td>
+                       <td colspan="2" align="center">
+                          <img src="https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/tklogo.png" alt="logo"/>
+                       </td>
+                       <td>&nbsp;</td>
+                    </tr>
+                    <tr style="font-size: 1rem">
+                       <td colspan="4" style="font-family: monospace; vertical-align: center; padding: 2em">
+                          <p style="text-align:justify">Your OTP for Account Verification <br><br><b style="font-size:90px">${otp}</b></p>
+                       </td>
+                    </tr>
+                    <tr style="vertical-align: top">
+                       <td style="font-family: monospace; vertical-align: center; padding: 2em">
+                          <div style="text-align: justify">
+                             <p style="margin: 4px"><b>contact</b></p>
+                             <p style="margin: 2px">6969696969</p>
+                             <p style="margin: 2px">4204204204</p>
+                          </div>
+                       </td>
+                       <td style="font-family: monospace; vertical-align: center; padding: 2em">
+                          <div style="text-align: justify">
+                             <p style="margin: 4px"><b>email</b></p>
+                             <p style="margin: 2px">support@cittakshashila.in</p>
+                             <p style="margin: 2px">coordinators@cittakshashila.in</p>
+                          </div>
+                       </td>
+                       <td style="font-family: monospace; vertical-align: center; padding: 2em">
+                          <div style="text-align: justify">
+                             <p style="margin: 4px"><b>visit us</b></p>
+                             <p style="margin: 2px">www.cittakshashila.in</p>
+                             <p style="margin: 2px">www.bitspace.org.in</p>
+                          </div>
+                       </td>
+                       <td style="font-family: monospace; vertical-align: center; padding: 2em">
+                          <p style="margin: 4px"><b>socials</b></p>
+                          <div style="display: flex;justify-content: left;margin: 4px;text-align: justify;">
+                             <a href="https://www.facebook.com/cittakshaskila" >
+                             <img alt="F" src="https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/fb.png" style="width: 15px; height: 15px; padding: 2px" />
+                             </a>
+                             <a href="https://www.github.com/bitspaceorg" >
+                             <img alt="G" src="https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/github.png" style="width: 15px; height: 15px; padding: 2px" />
+                             </a>
+                             <a href="https://www.instagram.com/cittakshaskila" >
+                             <img alt="I" src="https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/insta.png" style="width: 15px; height: 15px; padding: 2px"/>
+                             </a>
+                             <a href="https://twitter.com/cittakshashila" >
+                             <img alt="T" src="https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/x.png" style="width: 15px; height: 15px; padding: 2px"/>
+                             </a>
+                          </div>
+                       </td>
+                    </tr>
+                    <tr>
+                       <td colspan="4" style="font-family: monospace; vertical-align: center; padding: 2em">
+                          <p style="text-align: center">
+                             © 2024 Takshashila. All rights reserved.
+                          </p>
+                       </td>
+                    </tr>
+                 </table>
+              </div>
+           </body>
+        </html>
+        `,
+    }, (err , info) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send("Error sending email");
+        } else {
+            console.log(info);
+            res.status(200).send("Email sent successfully");
+        }
+    });
+}
+
+export {Registered, Paid, Emergency,Sendotp };
