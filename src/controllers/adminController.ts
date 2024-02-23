@@ -8,6 +8,9 @@ import {
   getEventAdminPassword,
   getUsersforEvent,
   insertEvent,
+  addEventAdmin,
+  insertEvents4Admin,
+  getAdminEvents
 } from "../queries/adminQueries.js";
 import {
   EventIdValidator,
@@ -55,21 +58,29 @@ const VerifyPaid = async (req: Request, res: Response) => {
   }
 
   const { user_email } = UserEmailValidator.parse(req.body);
-  const { event_id } = EventIdValidator.parse(req.body.admin);
+  const { event_id } = EventIdValidator.parse(req.body);
+  console.log(req.body.admin)
 
-  const client = await pool.connect();
-  const result = await client.query(allowIfPaid, [user_email, event_id]);
-  client.release();
+  if(req.body.admin.is_super_admin || (req.body.admin.events_id.includes(event_id))){
+    const client = await pool.connect();
+    const result = await client.query(allowIfPaid, [user_email, event_id]);
+    client.release();
 
-  if (result.rows.length == 1)
-    return res
-      .status(200)
-      .json({ statusCode: 200, body: { message: "Sucessfull" } });
-  else
-    return res.status(404).json({
-      statusCode: 404,
-      body: { message: "User not Paid, User not allowed" },
-    });
+    if (result.rows.length == 1)
+      return res
+        .status(200)
+        .json({ statusCode: 200, body: { message: "Sucessfull" } });
+    else
+      return res.status(404).json({
+        statusCode: 404,
+           body: { message: "User not Paid, User not allowed" },
+        });
+  }else{
+      return res.status(401).json({
+        statusCode: 401,
+           body: { message: "Admin not Authorized" },
+        });
+  }
 };
 
 /*  TO CREATE USER - "USER REGISTRATION"
@@ -114,28 +125,33 @@ const UserLogIn = async (req: Request, res: Response, next: NextFunction) => {
 /*  FOR EVENT CORDINATOR LOGIN
  */
 const EventLogin = async (req: Request, res: Response, next: NextFunction) => {
-  const { event_id, password } = EventLoginValidator.parse(req.body);
+  const { admin_id, password } = EventLoginValidator.parse(req.body);
 
   const client = await pool.connect();
-  const data = await client.query(getEventAdminPassword, [event_id]);
+  const data = await client.query(getEventAdminPassword, [admin_id]);
 
   client.release();
 
   if (data.rows.length == 0)
     return res
       .status(400)
-      .json({ statusCode: 400, body: { message: "Bad Request" } });
+      .json({ statusCode: 400, body: { message: "No Such Admin" } });
 
   const user = data.rows[0];
-  if (await bcrypt.compare(password, user.password)) next();
+  if (await bcrypt.compare(password, user.password)){
+    const events = await client.query(getAdminEvents, [admin_id])
+    let events_id : Array<string> = []
+    events.rows.forEach(ele=>events_id.push(ele.event_id))
+    req.body.events_id = events_id
+    next();
+  }
   else
     return res
       .status(401)
       .json({ statusCode: 401, body: { message: "Wrong Password" } });
 };
 
-/*  FOR GETTING USERS FROM A PARTICULAR EVENT
- */
+/*  FOR GETTING USERS FROM A PARTICULAR EVENT */
 const GetUsersFromEvent = async (req: Request, res: Response) => {
   if (!req.body.admin.is_event_admin) {
     return res
@@ -144,7 +160,7 @@ const GetUsersFromEvent = async (req: Request, res: Response) => {
   }
 
   const client = await pool.connect();
-  const { event_id } = EventIdValidator.parse(req.body.admin);
+  const { event_id } = EventIdValidator.parse(req.body);
   const data = await client.query(getUsersforEvent, [event_id]);
 
   return res.status(200).json({
@@ -201,6 +217,27 @@ const CreateEvent = async (req: Request, res: Response) => {
     .json({ statusCode: 200, body: { message: "Sucessfull" } });
 };
 
+const EventAdminSignUp = async(req: Request, res: Response) => {
+  const client = await pool.connect()
+  try{
+    const {admin_id, password, events_id} = req.body
+    const hashedPass = await bcrypt.hash(password, 10);
+    await client.query(begin)
+    await client.query(addEventAdmin, [admin_id, hashedPass])
+    await client.query(insertEvents4Admin, [admin_id, events_id])
+    await client.query(commit)
+    return res
+      .status(200)
+      .json({ statusCode: 200, body: { message: "Admin added with Events ID" } });
+  }catch(err){
+    console.log(err)
+    await client.query(rollback)
+    return res
+      .status(500)
+      .json({ statusCode: 500, body: { message: "Something went wrong" } });
+  }
+}
+
 export {
   UpdatePaid,
   VerifyPaid,
@@ -210,4 +247,5 @@ export {
   GetUsersFromEvent,
   UpdateUserCart,
   CreateEvent,
+  EventAdminSignUp
 };

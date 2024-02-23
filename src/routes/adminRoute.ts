@@ -8,7 +8,8 @@ import {
   EventLogin,
   GetUsersFromEvent,
   UpdateUserCart,
-  CreateEvent
+  CreateEvent,
+  EventAdminSignUp
 } from "../controllers/adminController.js";
 import asyncMiddleware from "../middlewares/asyncMiddleware.js";
 import {
@@ -28,6 +29,7 @@ router.get("/get-users", AuthourizeAdmin, asyncMiddleware(GetUsersFromEvent));
 
 //Comment this while PRODUCTION
 router.post("/signup", asyncMiddleware(UserSignUp));
+router.post("/event/signup", asyncMiddleware(EventAdminSignUp));
 router.post("/create-event", asyncMiddleware(CreateEvent))
 
 router.post("/login", asyncMiddleware(UserLogIn), CreateAdminToken);

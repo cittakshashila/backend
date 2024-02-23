@@ -1,5 +1,6 @@
 export interface PostgresError extends Error {
   code: string;
+  constraint: string;
 }
  
 export interface cartType {
