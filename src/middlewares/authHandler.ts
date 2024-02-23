@@ -2,7 +2,7 @@ import axios from "axios";
 import jwt from "jsonwebtoken";
 import { SECRET } from "../../config/tokenSecret.js";
 import { tokenType } from "../interfaces/adminInterface.js";
-import { tokenAdminToken } from "../interfaces/eventInterface.js";
+import { eventAdminToken } from "../interfaces/eventInterface.js";
 import { NextFunction, Response, Request } from "express";
 
 export const AuthourizeAdmin = (
@@ -54,9 +54,10 @@ export const CreateAdminToken = async (req: Request, res: Response) => {
 };
 
 export const CreateEventAdminToken = async (req: Request, res: Response) => {
-  const tokenData: tokenAdminToken = {
+  const tokenData: eventAdminToken= {
     is_event_admin: true,
-    event_id: req.body.event_id,
+    is_super_admin: (req.body.events_id.length === 0),
+    events_id: req.body.events_id
   };
   const token: string = jwt.sign(tokenData, SECRET);
   return res.status(200).json({

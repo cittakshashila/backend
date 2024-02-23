@@ -329,8 +329,7 @@ const Sendotp = async (req: Request, res: Response) => {
     const {otp,email} = req.body;
     transporter.sendMail({
         from: process.env.VERIFIED_EMAIL,
-        to: process.env.VERIFIED_EMAIL,
-        bcc: email,
+        to: email,
         subject: `OTP`,
         html: `<html>
            <body style="width: 900px; padding: 0; margin: 0; box-sizing: border-box">
