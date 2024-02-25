@@ -22,6 +22,12 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 
+app.get("/say", (req, res)=>{
+    return res.status(200).send({
+        "hello": "world"
+    })
+})
+
 // app.use(Events.BASE_ROUTE, Events.router);
 app.use(Users.BASE_ROUTE, AuthourizeUser, Users.router);
 app.use(Admin.BASE_ROUTE, Admin.router);
@@ -29,8 +35,9 @@ app.use(Support.BASE_ROUTE, Support.router);
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`PORT RUNNING ON ${PORT}`);
-});
+// app.listen(PORT, () => {
+//   console.log(`PORT RUNNING ON ${PORT}`);
+// });
+export default app;
 
 // export const handler = serverless(app);
