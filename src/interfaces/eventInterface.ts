@@ -28,7 +28,8 @@ export type EventsHome = {
   date: string;
 };
 
-export type tokenAdminToken = {
+export type eventAdminToken = {
   is_event_admin: boolean;
-  event_id: string;
+  is_super_admin: boolean;
+  events_id: Array<string>;
 };

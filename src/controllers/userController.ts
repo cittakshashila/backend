@@ -27,16 +27,26 @@ const GetUserDetails = async (req: Request, res: Response) => {
 };
 
 const CreateUser = async (req: Request, res: Response) => {
-  const data = createUserValidator.parse(req.body);
-  const user = emailValidator.parse(req.body.user);
-  const sql_arr = [data.name, user.email, data.phone_no, data.clg_name];
-  const client = await pool.connect();
-  await client.query(createUser, [...sql_arr]).then(() => {
-    client.release();
-  });
-  return res
-    .status(200)
-    .json({ statusCode: 200, message: "User Created Sucessfully" });
+  try{
+     const data = createUserValidator.parse(req.body);
+     const user = emailValidator.parse(req.body.user);
+     const sql_arr = [data.name, user.email, data.phone_no, data.clg_name];
+     const client = await pool.connect();
+     await client.query(createUser, [...sql_arr]).then(() => {
+       client.release();
+     });
+     return res
+       .status(200)
+       .json({ statusCode: 200, message: "User Created Sucessfully" });
+  }catch(err){
+    if (err && (err as PostgresError).code === "23505")
+      return res
+        .status(550)
+        .json({ statusCode: 550, body: { message: "User Already Found" } });
+    }
+    return res
+      .status(500)
+      .json({ statusCode: 500, body: { message: "Internal Server Error" } });
 };
 
 const GetUserCart = async (req: Request, res: Response) => {
@@ -75,10 +85,16 @@ const UpdateUserCart = async (
     });
   } catch (err) {
     await client.query(rollback);
-    if (err && (err as PostgresError).code === "23503") {
+    if (err && (err as PostgresError).code === "23503" && 
+        (err as PostgresError).constraint === "users_events_user_email_fkey") {
       return res
-        .status(550)
-        .json({ statusCode: 550, body: { message: "Event or User Not Found" } });
+        .status(551)
+        .json({ statusCode: 551, body: { message: "User Not Found" } });
+    }else if(err && (err as PostgresError).code === "23503" && 
+        (err as PostgresError).constraint === "users_events_event_id_fkey"){
+      return res
+        .status(552)
+        .json({ statusCode: 552, body: { message: "Event Not Found" } });
     }
     next(err);
 
