@@ -6,7 +6,7 @@ export const insertAdmin: string =
   "INSERT INTO admin (uname, password) VALUES ($1, $2)";
 export const getAdminPassword: string =
   "SELECT password FROM admin WHERE uname = $1";
-export const getUsersforEvent: string = `select u.name, u.phone_no, u.clg_name, ue.is_present, ue.paid ue.user_email from users u join
+export const getUsersforEvent: string = `select u.name, u.phone_no, u.clg_name, ue.is_present, ue.paid, u.email from users u join
 users_events ue on ue.user_email = u.email where ue.event_id = $1`;
 export const insertEvent: string = `insert into events (name, id, fee, pass_id, password) values
 ($1, $2, $3, $4, $5)`;
