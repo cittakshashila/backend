@@ -59,7 +59,6 @@ const VerifyPaid = async (req: Request, res: Response) => {
 
   const { user_email } = UserEmailValidator.parse(req.body);
   const { event_id } = EventIdValidator.parse(req.body);
-  console.log(req.body.admin)
 
   if(req.body.admin.is_super_admin || (req.body.admin.events_id.includes(event_id))){
     const client = await pool.connect();
