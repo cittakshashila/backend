@@ -157,21 +157,27 @@ const Registered = async (req: Request, res: Response) => {
                        <td colspan="4" style="font-family: monospace; vertical-align: center; padding: 2em">
                           <p>Hi ${name}, 
                             <br><br>
-                            Congratulations! We are thrilled to inform you that your registration for Takshashila has been successfully received. We are delighted to have you as a participant in our upcoming college cultural extravaganza. To ensure a smooth and enjoyable experience for everyone, please take note of the following rules, regulations, and instructions: 
+                            Congratulations!
+                            We are thrilled to inform you that your registration for Takshashila has been successfully received. We
+                            are delighted to have you as a participant in our upcoming college cultural extravaganza. To ensure a
+                            smooth and enjoyable experience for everyone, please take note of the following instructions:
                             <br><br>
-                            <b>Rules and Regulations:</b> 
-                            <li><b>Punctuality:</b> Please arrive at least 30 minutes before the scheduled start time of your registered events.</li> 
-                            <li><b>Dress Code:</b> Ensure that you adhere to the specified dress code for each event. </li>
-                            <li><b>Identification:</b> Carry a valid college ID card or any government-issued ID for verification purposes.</li>
+                            <li>Payment for the event will be done only on-spot.</li>
+                            <li>Please arrive at least 30 minutes before the scheduled start time of your registered events.</li>
+                            <li>Kindly ensure that you adhere to all the eligibility criteria mentioned and the rules and
+                            regulations of the registered event.</li>
+                            <li>Participants are expected to conduct themselves professionally and ensure that you adhere to the
+                            specified dress code for each event (if applicable).</li>
+                            <li>Participants must compulsorily carry a valid college ID card for verification purposes.</li>
+                            <li>Familiarize yourself with the event schedule and venue layout.</li>
                             <br>
-                            <b>Instructions for Participants:</b>
-                            <li>Familiarize yourself with the event schedule and venue layout. 
-                            <li>If you have any specific requirements or concerns, please inform the event coordinators in advance. 
-                            <li>Follow all safety protocols and guidelines provided by the event organizers on venue.
-
-                            For any queries or need any further assistance, feel free to reach out to our event coordinators. Once again, congratulations on your successful registration! We look forward to your enthusiastic participation and a memorable experience at Takshashila. 
-
-                            Best Regards, 
+                            If you have any specific requirements or concerns, please inform the event coordinators in advance.
+                            Follow all safety protocols and guidelines provided by the event organizers at the venue. For any
+                            queries or need any further assistance, feel free to reach out to our event coordinators.
+                            We look forward to your enthusiastic participation and a memorable experience at Takshashila.
+                            <br><br>
+                            Best Regards,
+                            <br>
                             Takshashila team
                           </p>
                        </td>
@@ -343,8 +349,23 @@ const Sendotp = async (req: Request, res: Response) => {
                        <td>&nbsp;</td>
                     </tr>
                     <tr style="font-size: 1rem">
-                       <td colspan="4" style="font-family: monospace; vertical-align: center; padding: 2em;text-align:center">
-                          <p>Your OTP for Account Verification<br><br><b style="font-size:90px">${otp}</b></p>
+                       <td colspan="4" style="font-family: monospace; vertical-align: center; padding: 2em;">
+                            <p> Greetings,
+                                <br><br>
+                                Congratulations! 🎊 You're officially on the guest list for Takshashila – where knowledge meets laughter, and fun gets a degree in awesomeness! 🎓
+                                To make sure it's really you and not just a very talented monkey with a typewriter who registered (hey, it happens), please verify with this One-Time Passcode (OTP)
+                                <br><br>
+                                <p style="text-align:center">
+                                <b style="font-size:90px;">${otp}</b>
+                                </p>
+                                <br><br>
+                                Once you're in, prepare to be dazzled by amazing minds, epic conversations, and maybe even a spontaneous dance-off (hey, it's been known to happen). 🕺
+                                See you at Takshashila!
+                                <br><br>
+                                Cheers,
+                                <br><br>
+                                Team TK
+                            </p>
                        </td>
                     </tr>
                     <tr style="vertical-align: top">
