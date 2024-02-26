@@ -62,6 +62,10 @@ export const CreateEventAdminToken = async (req: Request, res: Response) => {
   const token: string = jwt.sign(tokenData, SECRET);
   return res.status(200).json({
     statusCode: 200,
-    body: { message: "Token Generated Sucessfully", token: token },
+    body: { message: "Token Generated Sucessfully", 
+        token: token ,
+        event: req.body.events_id,
+        isAdmin: (req.body.events_id.length === 0)
+    },
   });
 };

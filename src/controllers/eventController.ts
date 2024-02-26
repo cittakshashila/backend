@@ -1,110 +1,53 @@
 import { Response, Request } from "express";
 import { pool } from "../../config/db.js";
-import { Events, EventsHome } from "../interfaces/eventInterface.js";
 import {
   createEvent,
-  deleteEvent,
-  getAllEvents,
-  getEventDetails,
-  updateEvent,
+  editEvent
 } from "../queries/eventQueries.js";
-import { EventIdValidator } from "../validators/eventValidators.js";
-const eventProperties = [
-  "name",
-  "description",
-  "tag_line",
-  "rules",
-  "img_link",
-  "fee",
-  "date",
-  "team_size",
-  "youtube",
-  "instagram",
-  "first_prize",
-  "second_prize",
-  "third_prize",
-  "is_paid",
-];
-
-const GetAllEvents = async (_: Request, res: Response) => {
-  const client = await pool.connect();
-  const result = await client.query(getAllEvents);
-  const events: Array<EventsHome> = result.rows;
-  client.release();
-
-  return res
-    .status(200)
-    .json({ status: 200, body: { message: "Sucessfull", events } });
-};
-
-const GetSpecificEvent = async (req: Request, res: Response) => {
-  const id = EventIdValidator.parse(req.params.id);
-  const client = await pool.connect();
-  const result = await client.query(getEventDetails, [id]);
-  const events: Array<Events> = result.rows;
-  client.release();
-
-  return res
-    .status(200)
-    .send({ status: 200, body: { message: "Sucessfull", events } });
-};
 
 const CreateEvent = async (req: Request, res: Response) => {
-  const client = await pool.connect();
-  const eventData = req.body;
-  const sql_arr = eventProperties.map((prop) => eventData[prop]);
-  if (eventData.name) {
-    await client.query(createEvent, sql_arr).then(() => {
-      client.release();
-    });
-
+  if(req.body.admin.is_super_admin){
+    const { event_id, name, fee, pass_id} = req.body
+    const client = await pool.connect()
+    await client.query(createEvent, [event_id, name, fee, pass_id])
+    client.release()
     return res
       .status(200)
       .json({ status: 200, body: { message: "Sucessfull" } });
-  } else
+  }else
     return res
-      .status(400)
-      .json({ status: 400, body: { message: "BadRequest" } });
-};
-
-const DeleteEvent = async (req: Request, res: Response) => {
-  const id = EventIdValidator.parse(req.params.id);
-  if (id) {
-    const client = await pool.connect();
-    await client.query(deleteEvent, [id]).then(() => {
-      client.release();
-    });
-    return res
-      .status(200)
-      .json({ status: 200, body: { message: "Sucessfull" } });
-  } else
-    return res
-      .status(400)
-      .json({ status: 400, body: { message: "BadRequest" } });
+      .status(403)
+      .json({ status: 403, body: { message: "Not Authorized" } });
 };
 
 const UpdateEvent = async (req: Request, res: Response) => {
-  const id = EventIdValidator.parse(req.params.id);
-  const client = await pool.connect();
-  const eventData = { ...req.body };
-  const sql_arr = eventProperties.map((props) => eventData[props]);
-  if (id) {
-    await client.query(updateEvent, [...sql_arr, id]);
-    client.release();
-
+  if(req.body.admin.is_super_admin || (req.body.admin.events_id.includes(req.body.event_id))){
+    try{
+      const { event_id, name, fee, pass_id} = req.body
+      const client = await pool.connect()
+      const data = await client.query(editEvent, [event_id, name, fee, pass_id])
+      client.release()
+      if(data.rows.length == 1)
+        return res
+          .status(200)
+          .json({ status: 200, body: { message: "Updated Sucessfull" } });
+      else
+        return res
+          .status(500)
+          .json({ status: 500, body: { message: "Event doesnot exist" } });
+    } catch(err){
+      console.log(err)
+      return res
+        .status(500)
+        .json({ status: 500, body: { message: "Event not updated" } });
+    }
+  }else
     return res
-      .status(200)
-      .json({ status: 200, body: { message: "Sucessfull" } });
-  } else
-    return res
-      .status(400)
-      .json({ status: 400, body: { message: "BadRequest" } });
+      .status(403)
+      .json({ status: 403, body: { message: "Not Authorized" } });
 };
 
 export {
   CreateEvent,
-  DeleteEvent,
-  GetAllEvents,
-  GetSpecificEvent,
-  UpdateEvent,
+  UpdateEvent
 };

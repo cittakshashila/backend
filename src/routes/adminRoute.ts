@@ -25,7 +25,7 @@ router.put("/pay-event", AuthourizeAdmin, asyncMiddleware(UpdatePaid));
 router.put("/update-cart", AuthourizeAdmin, asyncMiddleware(UpdateUserCart));
 
 router.put("/allow", AuthourizeAdmin, asyncMiddleware(VerifyPaid));
-router.get("/get-users", AuthourizeAdmin, asyncMiddleware(GetUsersFromEvent));
+router.get("/get-users/:event_id", AuthourizeAdmin, asyncMiddleware(GetUsersFromEvent));
 
 //Comment this while PRODUCTION
 router.post("/signup", asyncMiddleware(UserSignUp));

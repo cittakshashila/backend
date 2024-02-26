@@ -152,16 +152,16 @@ const EventLogin = async (req: Request, res: Response, next: NextFunction) => {
 
 /*  FOR GETTING USERS FROM A PARTICULAR EVENT */
 const GetUsersFromEvent = async (req: Request, res: Response) => {
-  if (!req.body.admin.is_event_admin) {
+  if (!req.body.admin.is_event_admin && (req.body.admin.events_id.includes(req.params.event_is))) {
     return res
       .status(401)
       .json({ statusCode: 401, body: { message: "UnAuthorized Request" } });
   }
 
   const client = await pool.connect();
-  const { event_id } = EventIdValidator.parse(req.body);
+  const { event_id } = EventIdValidator.parse(req.params);
   const data = await client.query(getUsersforEvent, [event_id]);
-
+  client.release()
   return res.status(200).json({
     statusCode: 200,
     body: { message: "Sucessfull", data: data.rows },
@@ -182,6 +182,7 @@ const UpdateUserCart = async (req: Request, res: Response) => {
       await client.query(insertMissingOnes, [user_email, events_id]);
       await client.query(deleteFromCart, [user_email, events_id]);
       await client.query(commit);
+      client.release()
 
       return res.status(200).json({
         statusCode: 200,
