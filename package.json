@@ -8,8 +8,7 @@
     "prestart": "npm run build",
     "start": "node dist/src/index.js",
     "test": "jest",
-    "dev": "concurrently \"npx tsc --watch\" \"npx tsc-alias --watch\" \"nodemon -q dist/src/index.js\"",
-    "vercel-build": "echo hello bharath"
+    "dev": "concurrently \"npx tsc --watch\" \"npx tsc-alias --watch\" \"nodemon -q dist/src/index.js\""
   },
   "keywords": [],
   "type": "module",
