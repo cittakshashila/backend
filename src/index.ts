@@ -33,4 +33,6 @@ app.use(errorHandler);
 //   console.log(`PORT RUNNING ON ${PORT}`);
 // });
 
-export const handler = serverless(app);
+export default app;
+
+// export const handler = serverless(app);

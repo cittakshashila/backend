@@ -10,7 +10,8 @@ import {
   insertEvent,
   addEventAdmin,
   insertEvents4Admin,
-  getAdminEvents
+  getAdminEvents,
+  getUserCart
 } from "../queries/adminQueries.js";
 import {
   EventIdValidator,
@@ -199,7 +200,10 @@ const UpdateUserCart = async (req: Request, res: Response) => {
         .status(500)
         .json({ statusCode: 500, body: { message: "Internal Server Error" } });
     }
-  }
+  }else
+      return res
+        .status(403)
+        .json({ statusCode: 403, body: { message: "Not Authorized" } });
 };
 
 /*/
@@ -238,6 +242,24 @@ const EventAdminSignUp = async(req: Request, res: Response) => {
   }
 }
 
+const GetUserCart = async(req: Request, res: Response) => {
+  if(req.body.admin.is_admin){
+    const {user_email} = req.body
+    const client = await pool.connect()
+    const data = await client.query(getUserCart, [user_email])
+    client.release()
+    let events_id : Array<string> = []
+    data.rows.forEach((ele)=> events_id.push(ele.event_id))
+
+    return res
+      .status(200)
+      .json({ statusCode: 200, body: { data: events_id } });
+  }else
+    return res
+      .status(403)
+      .json({ statusCode: 403, body: { message: "Admin not Authorized" } });
+}
+
 export {
   UpdatePaid,
   VerifyPaid,
@@ -247,5 +269,6 @@ export {
   GetUsersFromEvent,
   UpdateUserCart,
   CreateEvent,
-  EventAdminSignUp
+  EventAdminSignUp,
+  GetUserCart
 };
