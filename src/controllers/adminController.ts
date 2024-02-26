@@ -27,7 +27,7 @@ import {
   insertMissingOnes,
   rollback,
 } from "../queries/userQueries.js";
-import { PostgresError } from "../interfaces/userInterface.js";
+import { cartType, PostgresError } from "../interfaces/userInterface.js";
 
 /* THIS IS THE ROUTE FOR TOGGLE THE USER TO BE PAID ON FRONT DESK
  */
@@ -248,12 +248,14 @@ const GetUserCart = async(req: Request, res: Response) => {
     const client = await pool.connect()
     const data = await client.query(getUserCart, [user_email])
     client.release()
-    let events_id : Array<string> = []
-    data.rows.forEach((ele)=> events_id.push(ele.event_id))
-
+    let cartItems: Record<string, Array<cartType>> = {};
+    data.rows.forEach((event: cartType) => {
+      if (!cartItems[event.pass_id]) cartItems[event.pass_id] = [];
+      cartItems[event.pass_id].push(event);
+    });
     return res
       .status(200)
-      .json({ statusCode: 200, body: { data: events_id } });
+      .json({ statusCode: 200, body: { data: cartItems } });
   }else
     return res
       .status(403)

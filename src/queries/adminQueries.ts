@@ -17,4 +17,17 @@ export const insertEvents4Admin: string = `
     ON CONFLICT (admin_id, event_id) DO NOTHING`;
 export const getEventAdminPassword: string = `SELECT password FROM event_admin WHERE id = $1`;
 export const getAdminEvents: string = `SELECT event_id FROM admin_events WHERE admin_id = $1`;
-export const getUserCart: string = `SELECT event_id FROM users_events where user_email = $1 and paid = false`;
+export const getUserCart: string = `
+SELECT
+    ue.event_id,
+    e.name,
+    e.fee,
+    ue.paid,
+    ue.is_present,
+    p.id AS pass_id,
+    ue.user_email
+FROM users_events ue
+JOIN events e ON ue.event_id = e.id
+JOIN pass p ON e.pass_id = p.id
+WHERE ue.user_email= $1;
+`;
