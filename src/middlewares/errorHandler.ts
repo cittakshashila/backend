@@ -16,6 +16,7 @@ function errorHandler(
       },
     });
   }
+  console.log(err)
   return res.status(500).json({
     statusCode: 500,
     body: {
