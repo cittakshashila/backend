@@ -10,7 +10,9 @@ import {
   insertEvent,
   addEventAdmin,
   insertEvents4Admin,
-  getAdminEvents
+  getAdminEvents,
+  getUserCart,
+  createUserVIAadmin
 } from "../queries/adminQueries.js";
 import {
   EventIdValidator,
@@ -26,7 +28,7 @@ import {
   insertMissingOnes,
   rollback,
 } from "../queries/userQueries.js";
-import { PostgresError } from "../interfaces/userInterface.js";
+import { cartType, PostgresError } from "../interfaces/userInterface.js";
 
 /* THIS IS THE ROUTE FOR TOGGLE THE USER TO BE PAID ON FRONT DESK
  */
@@ -152,16 +154,16 @@ const EventLogin = async (req: Request, res: Response, next: NextFunction) => {
 
 /*  FOR GETTING USERS FROM A PARTICULAR EVENT */
 const GetUsersFromEvent = async (req: Request, res: Response) => {
-  if (!req.body.admin.is_event_admin) {
+  if (!req.body.admin.is_event_admin && (req.body.admin.events_id.includes(req.params.event_is))) {
     return res
       .status(401)
       .json({ statusCode: 401, body: { message: "UnAuthorized Request" } });
   }
 
   const client = await pool.connect();
-  const { event_id } = EventIdValidator.parse(req.body);
+  const { event_id } = EventIdValidator.parse(req.params);
   const data = await client.query(getUsersforEvent, [event_id]);
-
+  client.release()
   return res.status(200).json({
     statusCode: 200,
     body: { message: "Sucessfull", data: data.rows },
@@ -182,6 +184,7 @@ const UpdateUserCart = async (req: Request, res: Response) => {
       await client.query(insertMissingOnes, [user_email, events_id]);
       await client.query(deleteFromCart, [user_email, events_id]);
       await client.query(commit);
+      client.release()
 
       return res.status(200).json({
         statusCode: 200,
@@ -198,7 +201,10 @@ const UpdateUserCart = async (req: Request, res: Response) => {
         .status(500)
         .json({ statusCode: 500, body: { message: "Internal Server Error" } });
     }
-  }
+  }else
+      return res
+        .status(403)
+        .json({ statusCode: 403, body: { message: "Not Authorized" } });
 };
 
 /*/
@@ -237,6 +243,40 @@ const EventAdminSignUp = async(req: Request, res: Response) => {
   }
 }
 
+const GetUserCart = async(req: Request, res: Response) => {
+  if(req.body.admin.is_admin){
+    const {user_email} = req.body
+    const client = await pool.connect()
+    const data = await client.query(getUserCart, [user_email])
+    client.release()
+    let cartItems: Record<string, Array<cartType>> = {};
+    data.rows.forEach((event: cartType) => {
+      if (!cartItems[event.pass_id]) cartItems[event.pass_id] = [];
+      cartItems[event.pass_id].push(event);
+    });
+    return res
+      .status(200)
+      .json({ statusCode: 200, body: { data: cartItems } });
+  }else
+    return res
+      .status(403)
+      .json({ statusCode: 403, body: { message: "Admin not Authorized" } });
+}
+
+const CreateUser = async(req: Request, res:Response) => {
+  if(req.body.admin.is_admin){
+    const {email, name, clg_name, phone_no} = req.body
+    const client = await pool.connect()
+    await client.query(createUserVIAadmin,[name, email, phone_no, clg_name])
+    return res
+      .status(200)
+      .json({ statusCode: 200, body: { data: "User Created Sucessfully"} });
+  }else
+    return res
+      .status(403)
+      .json({ statusCode: 403, body: { message: "Admin not Authorized" } });
+}
+
 export {
   UpdatePaid,
   VerifyPaid,
@@ -246,5 +286,7 @@ export {
   GetUsersFromEvent,
   UpdateUserCart,
   CreateEvent,
-  EventAdminSignUp
+  EventAdminSignUp,
+  GetUserCart,
+  CreateUser 
 };

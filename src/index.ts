@@ -3,7 +3,7 @@ import cors from "cors";
 import { PORT } from "../config/port.js";
 import { Admin, Events, Users, Support } from "./routes/index.js";
 import errorHandler from "./middlewares/errorHandler.js";
-import { AuthourizeUser, AuthourizeAdmin } from "./middlewares/authHandler.js";
+import { AuthourizeAdmin, AuthourizeUser } from "./middlewares/authHandler.js";
 import serverless from "serverless-http";
 
 const app = express();
@@ -31,8 +31,8 @@ app.use(Support.BASE_ROUTE, Support.router);
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`PORT RUNNING ON ${PORT}`);
-});
+// app.listen(PORT, () => {
+//   console.log(`PORT RUNNING ON ${PORT}`);
+// });
 
-// export const handler = serverless(app);
+export const handler = serverless(app);

@@ -11,5 +11,5 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*", "./jest.config.ts"]
+  "include": ["src/**/*", "./jest.config.ts", "api/*"]
 }

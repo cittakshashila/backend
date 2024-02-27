@@ -20,6 +20,7 @@ const GetUserDetails = async (req: Request, res: Response) => {
   const { email } = emailValidator.parse(req.body.user);
   const client = await pool.connect();
   const result = await client.query(getUserDetails, [email]);
+  client.release()
   return res.status(200).json({
     statusCode: 200,
     body: { message: "Request Sucessfull", data: result.rows },
@@ -53,6 +54,7 @@ const GetUserCart = async (req: Request, res: Response) => {
   const { email } = emailValidator.parse(req.body.user);
   const client = await pool.connect();
   const data = await client.query(getCart, [email]);
+  client.release()
   let cartItems: Record<string, Array<cartType>> = {};
   data.rows.forEach((event: cartType) => {
     if (!cartItems[event.pass_id]) cartItems[event.pass_id] = [];
@@ -78,6 +80,7 @@ const UpdateUserCart = async (
     await client.query(insertMissingOnes, [email, events_id]);
     await client.query(deleteFromCart, [email, events_id]);
     await client.query(commit);
+    client.release()
 
     return res.status(200).json({
       statusCode: 200,
