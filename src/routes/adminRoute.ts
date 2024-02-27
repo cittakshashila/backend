@@ -10,7 +10,8 @@ import {
   UpdateUserCart,
   CreateEvent,
   EventAdminSignUp,
-  GetUserCart
+  GetUserCart,
+  CreateUser
 } from "../controllers/adminController.js";
 import asyncMiddleware from "../middlewares/asyncMiddleware.js";
 import {
@@ -25,6 +26,7 @@ const BASE_ROUTE = "/admin";
 router.put("/pay-event", AuthourizeAdmin, asyncMiddleware(UpdatePaid));
 router.put("/update-cart", AuthourizeAdmin, asyncMiddleware(UpdateUserCart));
 router.post("/get-cart", AuthourizeAdmin, asyncMiddleware(GetUserCart))
+router.post("/create-user", AuthourizeAdmin, asyncMiddleware(CreateUser))
 
 router.put("/allow", AuthourizeAdmin, asyncMiddleware(VerifyPaid));
 router.get("/get-users/:event_id", AuthourizeAdmin, asyncMiddleware(GetUsersFromEvent));

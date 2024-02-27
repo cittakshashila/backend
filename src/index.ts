@@ -29,9 +29,9 @@ app.use(Support.BASE_ROUTE, Support.router);
 
 app.use(errorHandler);
 
-// app.listen(PORT, () => {
-//   console.log(`PORT RUNNING ON ${PORT}`);
-// });
+app.listen(PORT, () => {
+  console.log(`PORT RUNNING ON ${PORT}`);
+});
 
 export default app;
 
