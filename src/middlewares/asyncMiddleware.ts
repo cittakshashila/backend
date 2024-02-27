@@ -5,6 +5,7 @@ function asyncMiddleware(handler: any) {
     try {
       await handler(req, res, next);
     } catch (err) {
+      console.log(err)
       next(err);
     }
   };

@@ -8,7 +8,11 @@ import dotenv from "dotenv"
 dotenv.config();
 
 const Paid = async (req: Request, res: Response) => {
-    const {type,email} = req.body;
+    if(!req.body.admin.is_admin)
+      return res
+        .status(401)
+        .json({ statusCode: 401, body: { message: "Unauthorized Request" } });
+    const { type, email } = req.body;
     const client = await pool.connect();
     const result = await client.query(payment, [email]);
     const events = result.rows;
@@ -20,7 +24,7 @@ const Paid = async (req: Request, res: Response) => {
            <head>
               <style>
                  body {
-                 width: 930px;     
+                 width: 930px;
                  height: 356.77px;
                      background: black;
                  }
@@ -34,7 +38,7 @@ const Paid = async (req: Request, res: Response) => {
                     </p>
                     <p style="font-size: 15px;margin: 6px 0px 0px 30px;">Boarding<br/>Date: ${curdate}</p>
                     <p style="font-size: 15px;margin: 8px 0px 0px 30px;">from ${events[0].clg_name} to CIT</p>
-                    <p style="font-size: 30px;margin: 60px 0px 0px 30px;">${events[0].id}</p>
+                    <p style="font-size: 30px;margin: 60px 0px 0px 30px;">${events[0].id.slice(0,8)}</p>
                     <p style="font-size: 30px;margin: 40px 0px 0px 30px;">${type}</p>
                  </div>
                  <div style="display: flex;background: white; flex-direction: column;border-radius: 15px;align-items: center;width: 255px;max-height: 356.77px;padding-top: 50px;justify-content: space-evenly;">
@@ -124,19 +128,22 @@ const Paid = async (req: Request, res: Response) => {
                 contentType: "image/png",
             },
         ],
-    }, (err , info) => {
+    }, (err) => {
         if (err) {
-            console.log(err);
-            res.status(500).send("Error sending email");
+          return res
+            .status(500)
+            .json({ statusCode: 500, body: { message: "Error sending email" } });
         } else {
-            console.log(info);
-            res.status(200).send("Email sent successfully");
+          return res
+            .status(200)
+            .json({ statusCode: 200, body: { message: "Email sent successfully" } });
         }
     });
 }
 
 const Registered = async (req: Request, res: Response) => {
-    const {name, email} = req.body;
+    const { name } = req.body;
+    const { email } = req.body.user;
     transporter.sendMail({
         from: process.env.VERIFIED_EMAIL,
         to: email,
@@ -226,107 +233,122 @@ const Registered = async (req: Request, res: Response) => {
            </body>
         </html>
         `,
-    }, (err , info) => {
+    }, (err) => {
         if (err) {
-            console.log(err);
-            res.status(500).send("Error sending email");
+          return res
+            .status(500)
+            .json({ statusCode: 500, body: { message: "Error sending email" } });
         } else {
-            console.log(info);
-            res.status(200).send("Email sent successfully");
+          return res
+            .status(200)
+            .json({ statusCode: 200, body: { message: "Email sent successfully" } });
         }
     });
 }
 
 const Emergency = async (req: Request, res: Response) => {
-    const {event_id,body} = req.body;
-    const client = await pool.connect();
-    const result = await client.query(emergency, [event_id]);
-    const events = result.rows;
-    client.release();
-    transporter.sendMail({
-        from: process.env.VERIFIED_EMAIL,
-        to: process.env.VERIFIED_EMAIL,
-        bcc: events[0].emails,
-        subject: `Announcement Regarding ${event_id}`,
-        html: `<html>
-           <body style="width: 900px; padding: 0; margin: 0; box-sizing: border-box">
-              <div style="background: gray; padding: 4%">
-                 <table id="content" colspan="4" style="background: white; width: 100%">
-                    <tr style="height: 15vh">
-                       <td>&nbsp;</td>
-                       <td colspan="2" align="center">
-                          <img src="https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/tklogo.png" alt="logo"/>
-                       </td>
-                       <td>&nbsp;</td>
-                    </tr>
-                    <tr style="font-size: 1rem">
-                       <td colspan="4" style="font-family: monospace; vertical-align: center; padding: 2em">
-                          <p>${body}</p>
-                       </td>
-                    </tr>
-                    <tr style="vertical-align: top">
-                       <td style="font-family: monospace; vertical-align: center; padding: 2em">
-                          <div style="text-align: justify">
-                             <p style="margin: 4px"><b>contact</b></p>
-                             <p style="margin: 2px">9150472413</p>
-                             <p style="margin: 2px">8015929273</p>
-                          </div>
-                       </td>
-                       <td style="font-family: monospace; vertical-align: center; padding: 2em">
-                          <div style="text-align: justify">
-                             <p style="margin: 4px"><b>email</b></p>
-                             <p style="margin: 2px">takshashila@citchennai.net</p>
-                          </div>
-                       </td>
-                       <td style="font-family: monospace; vertical-align: center; padding: 2em">
-                          <div style="text-align: justify">
-                             <p style="margin: 4px"><b>visit us</b></p>
-                             <p style="margin: 2px">www.cittakshashila.in</p>
-                          </div>
-                       </td>
-                       <td style="font-family: monospace; vertical-align: center; padding: 2em">
-                          <p style="margin: 4px"><b>socials</b></p>
-                          <div style="display: flex;justify-content: left;margin: 4px;text-align: justify;">
-                             <a href="https://www.facebook.com/cittakshaskila" >
-                             <img alt="F" src="https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/fb.png" style="width: 15px; height: 15px; padding: 2px" />
-                             </a>
-                             <a href="https://www.github.com/cittakshashila" >
-                             <img alt="G" src="https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/github.png" style="width: 15px; height: 15px; padding: 2px" />
-                             </a>
-                             <a href="https://www.instagram.com/cittakshaskila" >
-                             <img alt="I" src="https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/insta.png" style="width: 15px; height: 15px; padding: 2px"/>
-                             </a>
-                             <a href="https://twitter.com/cittakshashila" >
-                             <img alt="T" src="https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/x.png" style="width: 15px; height: 15px; padding: 2px"/>
-                             </a>
-                          </div>
-                       </td>
-                    </tr>
-                    <tr>
-                       <td colspan="4" style="font-family: monospace; vertical-align: center; padding: 2em">
-                          <p style="text-align: center">
-                             © 2024 Takshashila. All rights reserved.
-                          </p>
-                       </td>
-                    </tr>
-                 </table>
-              </div>
-           </body>
-        </html>
-        `,
-    }, (err , info) => {
-        if (err) {
-            console.log(err);
-            res.status(500).send("Error sending email");
-        } else {
-            console.log(info);
-            res.status(200).send("Email sent successfully");
-        }
-    });
+    const { event_id, body } = req.body;
+    console.log(req.body.admin)
+    if((req.body.admin.is_event_admin && (req.body.admin.events_id.includes(event_id)))
+        || (req.body.admin.is_super_admin)){
+      const client = await pool.connect();
+      const result = await client.query(emergency, [event_id]);
+      const events = result.rows;
+      client.release();
+      let users_email : Array<string> = []
+      events.forEach(ele =>{ users_email.push(ele.user_email) })
+      transporter.sendMail({
+          from: process.env.VERIFIED_EMAIL,
+          to: process.env.VERIFIED_EMAIL,
+          bcc: users_email,
+          subject: `Announcement Regarding ${event_id}`,
+          html: `<html>
+             <body style="width: 900px; padding: 0; margin: 0; box-sizing: border-box">
+                <div style="background: gray; padding: 4%">
+                   <table id="content" colspan="4" style="background: white; width: 100%">
+                      <tr style="height: 15vh">
+                         <td>&nbsp;</td>
+                         <td colspan="2" align="center">
+                            <img src="https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/tklogo.png" alt="logo"/>
+                         </td>
+                         <td>&nbsp;</td>
+                      </tr>
+                      <tr style="font-size: 1rem">
+                         <td colspan="4" style="font-family: monospace; vertical-align: center; padding: 2em">
+                            <p>${body}</p>
+                         </td>
+                      </tr>
+                      <tr style="vertical-align: top">
+                         <td style="font-family: monospace; vertical-align: center; padding: 2em">
+                            <div style="text-align: justify">
+                               <p style="margin: 4px"><b>contact</b></p>
+                               <p style="margin: 2px">9150472413</p>
+                               <p style="margin: 2px">8015929273</p>
+                            </div>
+                         </td>
+                         <td style="font-family: monospace; vertical-align: center; padding: 2em">
+                            <div style="text-align: justify">
+                               <p style="margin: 4px"><b>email</b></p>
+                               <p style="margin: 2px">takshashila@citchennai.net</p>
+                            </div>
+                         </td>
+                         <td style="font-family: monospace; vertical-align: center; padding: 2em">
+                            <div style="text-align: justify">
+                               <p style="margin: 4px"><b>visit us</b></p>
+                               <p style="margin: 2px">www.cittakshashila.in</p>
+                            </div>
+                         </td>
+                         <td style="font-family: monospace; vertical-align: center; padding: 2em">
+                            <p style="margin: 4px"><b>socials</b></p>
+                            <div style="display: flex;justify-content: left;margin: 4px;text-align: justify;">
+                               <a href="https://www.facebook.com/cittakshaskila" >
+                               <img alt="F" src="https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/fb.png" style="width: 15px; height: 15px; padding: 2px" />
+                               </a>
+                               <a href="https://www.github.com/cittakshashila" >
+                               <img alt="G" src="https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/github.png" style="width: 15px; height: 15px; padding: 2px" />
+                               </a>
+                               <a href="https://www.instagram.com/cittakshaskila" >
+                               <img alt="I" src="https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/insta.png" style="width: 15px; height: 15px; padding: 2px"/>
+                               </a>
+                               <a href="https://twitter.com/cittakshashila" >
+                               <img alt="T" src="https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/x.png" style="width: 15px; height: 15px; padding: 2px"/>
+                               </a>
+                            </div>
+                         </td>
+                      </tr>
+                      <tr>
+                         <td colspan="4" style="font-family: monospace; vertical-align: center; padding: 2em">
+                            <p style="text-align: center">
+                               © 2024 Takshashila. All rights reserved.
+                            </p>
+                         </td>
+                      </tr>
+                   </table>
+                </div>
+             </body>
+          </html>
+          `,
+      }, (err) => {
+          if (err) {
+              return res
+                .status(500)
+                .json({ statusCode: 500, body: { message: "Error Sending email" } });
+          } else {
+              return res
+                .status(200)
+                .json({ statusCode: 200, body: { message: "Email sent successfully" } });
+          }
+      });
+    }else{
+      return res
+        .status(401)
+        .json({ statusCode: 401, body: { message: "Unauthorized Request" } });
+    }
 }
 
 const Sendotp = async (req: Request, res: Response) => {
-    const {otp,email} = req.body;
+    const { otp } = req.body;
+    const { email } = req.body.user
     transporter.sendMail({
         from: process.env.VERIFIED_EMAIL,
         to: email,
@@ -397,13 +419,15 @@ const Sendotp = async (req: Request, res: Response) => {
            </body>
         </html>
         `,
-    }, (err , info) => {
+    }, (err) => {
         if (err) {
-            console.log(err);
-            res.status(500).send("Error sending email");
+          return res
+            .status(500)
+            .json({ statusCode: 500, body: { message: "Error Sending Email" } });
         } else {
-            console.log(info);
-            res.status(200).send("Email sent successfully");
+          return res
+            .status(200)
+            .json({ statusCode: 200, body: { message: "Email sent successfully" } });
         }
     });
 }

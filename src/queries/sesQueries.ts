@@ -1,2 +1,2 @@
-export const payment: string = `select name,clg_name,id from users where email=$1`;
-export const emergency: string = `select user_email from users_events where event_id=$1`;
+export const payment: string = `SELECT name, clg_name, id FROM users WHERE email=$1`;
+export const emergency: string = `SELECT user_email FROM users_events WHERE event_id=$1`;
