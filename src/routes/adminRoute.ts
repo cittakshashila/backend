@@ -31,10 +31,10 @@ router.post("/create-user", AuthourizeAdmin, asyncMiddleware(CreateUser))
 router.put("/allow", AuthourizeAdmin, asyncMiddleware(VerifyPaid));
 router.get("/get-users/:event_id", AuthourizeAdmin, asyncMiddleware(GetUsersFromEvent));
 
-//Comment this while PRODUCTION
-router.post("/signup", asyncMiddleware(UserSignUp));
-router.post("/event/signup", asyncMiddleware(EventAdminSignUp));
-router.post("/create-event", asyncMiddleware(CreateEvent))
+// Comment this while PRODUCTION
+// router.post("/signup", asyncMiddleware(UserSignUp));
+// router.post("/event/signup", asyncMiddleware(EventAdminSignUp));
+// router.post("/create-event", asyncMiddleware(CreateEvent))
 
 router.post("/login", asyncMiddleware(UserLogIn), CreateAdminToken);
 router.post("/event/login", asyncMiddleware(EventLogin), CreateEventAdminToken);
