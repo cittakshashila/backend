@@ -10,4 +10,6 @@ export const pool = new Pool({
   database: process.env.DB_NAME,
   password: process.env.DB_PASS,
   port: 5432,
+  idleTimeoutMillis: 20000,
+  max: 10
 });

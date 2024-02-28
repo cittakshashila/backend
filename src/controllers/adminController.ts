@@ -193,6 +193,7 @@ const UpdateUserCart = async (req: Request, res: Response) => {
       });
     } catch (err) {
       await client.query(rollback);
+      client.release()
       if (err && (err as PostgresError).code === "23503") {
         return res
           .status(400)
@@ -216,11 +217,18 @@ const CreateEvent = async (req: Request, res: Response) => {
 
   const hashedPass = await bcrypt.hash(password, 10);
   const client = await pool.connect();
-  await client.query(insertEvent, [name, id, fee, pass_id, hashedPass]);
-
-  return res
-    .status(200)
-    .json({ statusCode: 200, body: { message: "Sucessfull" } });
+  let status = 200;
+  let message = "Event Created"
+  try{
+    await client.query(insertEvent, [name, id, fee, pass_id, hashedPass]);
+  }catch(err){
+    status = 550;
+    message = "Error Event Already Exist"
+  } finally{
+    return res
+      .status(status)
+      .json({ statusCode: status, body: { message } });
+  }
 };
 
 const EventAdminSignUp = async(req: Request, res: Response) => {
@@ -268,10 +276,19 @@ const CreateUser = async(req: Request, res:Response) => {
   if(req.body.admin.is_admin){
     const {email, name, clg_name, phone_no} = req.body
     const client = await pool.connect()
-    await client.query(createUserVIAadmin,[name, email, phone_no, clg_name])
-    return res
-      .status(200)
-      .json({ statusCode: 200, body: { data: "User Created Sucessfully"} });
+    let status = 200;
+    let message = "User Created Sucessfully";
+    try{
+      await client.query(createUserVIAadmin,[name, email, phone_no, clg_name])
+    }catch(err){
+      status = 550;
+      message = "User Already Exist"
+    }finally{
+      client.release()
+      return res
+        .status(status)
+        .json({ statusCode: status, body: { data: message} });
+    }
   }else
     return res
       .status(403)

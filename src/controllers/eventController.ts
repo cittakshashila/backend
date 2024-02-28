@@ -22,9 +22,9 @@ const CreateEvent = async (req: Request, res: Response) => {
 
 const UpdateEvent = async (req: Request, res: Response) => {
   if(req.body.admin.is_super_admin || (req.body.admin.events_id.includes(req.body.event_id))){
+    const client = await pool.connect()
     try{
       const { event_id, name, fee, pass_id} = req.body
-      const client = await pool.connect()
       const data = await client.query(editEvent, [event_id, name, fee, pass_id])
       client.release()
       if(data.rows.length == 1)
@@ -36,7 +36,7 @@ const UpdateEvent = async (req: Request, res: Response) => {
           .status(500)
           .json({ status: 500, body: { message: "Event doesnot exist" } });
     } catch(err){
-      console.log(err)
+      client.release()
       return res
         .status(500)
         .json({ status: 500, body: { message: "Event not updated" } });
