@@ -3,7 +3,6 @@ import { pool } from "../../config/db.js";
 import { transporter } from "../../config/ses.js";
 import { payment , emergency } from "../queries/sesQueries.js";
 import QRCode from "qrcode";
-import nodeHtmlToImage from 'node-html-to-image'
 import dotenv from "dotenv"
 dotenv.config();
 
@@ -19,43 +18,12 @@ const Paid = async (req: Request, res: Response) => {
     client.release();
     const curdate = new Date(Date.now());
     const qr = await QRCode.toDataURL(email);
-    const ticket = await nodeHtmlToImage({
-        html:`<html>
-           <head>
-              <style>
-                 body {
-                 width: 930px;
-                 height: 356.77px;
-                     background: black;
-                 }
-              </style>
-           </head>
-           <body style="font-family: monospace; font-weight: 500;">
-              <div style="display: flex;max-width: 930px;max-height: 356.77px;">
-                 <div style="width:675px;height:356.77px;border-right:2px dashed #a0a0a0;border-radius: 15px;background: url('https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/tick.png');">
-                    <p style="margin:50px 0px 0px 25px;font-size:30px">
-                       ${events[0].name}
-                    </p>
-                    <p style="font-size: 15px;margin: 6px 0px 0px 30px;">Boarding<br/>Date: ${curdate}</p>
-                    <p style="font-size: 15px;margin: 8px 0px 0px 30px;">from ${events[0].clg_name} to CIT</p>
-                    <p style="font-size: 30px;margin: 60px 0px 0px 30px;">${events[0].id.slice(0,8)}</p>
-                    <p style="font-size: 30px;margin: 40px 0px 0px 30px;">${type}</p>
-                 </div>
-                 <div style="display: flex;background: white; flex-direction: column;border-radius: 15px;align-items: center;width: 255px;max-height: 356.77px;padding-top: 50px;justify-content: space-evenly;">
-                    <img alt="qr" width="207.29px" height="207.29px" src="${qr}">
-                    <img src="https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/tklogo.png" alt="logo" width="165px" height="38px">
-                 </div>
-              </div>
-           </body>
-        </html>`,
-        content: { qr: qr },
-    });
     transporter.sendMail({
         from: process.env.VERIFIED_EMAIL,
         to: email,
         subject: "Your Payment For Takshashila Was successfull",
         html: `<html>
-           <body style="width: 900px; padding: 0; margin: 0; box-sizing: border-box">
+           <body style="width: 1200px; padding: 0; margin: 0; box-sizing: border-box">
               <div style="background: gray; padding: 4%">
                  <table id="content" colspan="4" style="background: white; width: 100%">
                     <tr style="height: 15vh">
@@ -67,7 +35,42 @@ const Paid = async (req: Request, res: Response) => {
                     </tr>
                     <tr style="font-size: 1rem">
                        <td colspan="4" style="font-family: monospace; vertical-align: center; padding: 2em">
-                          <p>body</p>
+                      <p>
+                        Greetings,
+                        <br><br>
+                        Welcome aboard the Takshashila express! 🚂 Today's the day we embark on a journey of discovery, laughter, and maybe a few surprises along the way. As you step into our virtual wonderland of knowledge, here's a little guide to make the most of your experience.
+
+                        <li> Please find your boarding pass attached with this mail</li>
+                        <li> This pass grants you entry to all of your registered events</li>
+                        <li> Check the website for the rules and regulation for each event</li>
+
+                        Get ready to immerse yourself in a cultural extravaganza at Takshashila! This event promises to be a vibrant blend of entertainment and enlightenment – Let’s enjoy!
+                        <br><br>
+                        Welcome,
+                        <br><br>
+                        Team TK
+                          </p>
+                       <div style="font-family: monospace; font-weight: 500;width:930px;height:356.77px;">
+                          <div style="display: flex;max-width: 930px;max-height: 356.77px;">
+                             <div style="width:675px;height:356.77px;border-right:2px dashed #a0a0a0;border-radius: 15px;background: url('https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/tick.png');">
+                                <p style="margin:50px 0px 0px 25px;font-size:30px">
+                                   ${events[0].name}
+                                </p>
+                                <p style="font-size: 15px;margin: 6px 0px 0px 30px;">Boarding<br/>Date: ${curdate}</p>
+                                <p style="font-size: 15px;margin: 8px 0px 0px 30px;">from ${events[0].clg_name} to CIT</p>
+                                <p style="font-size: 30px;margin: 50px 0px 0px 30px;">${events[0].id.slice(0,8)}</p>
+                                <p style="font-size: 30px;margin: 30px 0px 0px 30px;">${type}</p>
+                             </div>
+                             <div style="background: #ececec;border-radius: 15px;align-items: center;width: 255px;max-height: 356.77px;padding-top: 50px;">
+                                <p style="padding:0px 0px 0px 23.85px">
+                                <img alt="qr" width="207.29px" height="207.29px" src="cid:qr">
+                                </p>
+                                <p style="padding:0px 0px 0px 45px">
+                                <img src="https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/tklogo.png" alt="logo" width="165px" height="38px">
+                                </p>
+                             </div>
+                          </div>
+                       <div>
                        </td>
                     </tr>
                     <tr style="vertical-align: top">
@@ -122,10 +125,9 @@ const Paid = async (req: Request, res: Response) => {
         `,
         attachments: [
             {
-                filename: "ticket.png",
-                content: ticket.toString("base64"),
-                encoding: "base64",
-                contentType: "image/png",
+                filename: "qr.png",
+                path: qr,
+                cid: "qr",
             },
         ],
     }, (err) => {
@@ -253,7 +255,7 @@ const Registered = async (req: Request, res: Response) => {
 }
 
 const Emergency = async (req: Request, res: Response) => {
-    const { event_id, body } = req.body;
+    const { event_id, body,subject } = req.body;
     console.log(req.body.admin)
     if((req.body.admin.is_event_admin && (req.body.admin.events_id.includes(event_id)))
         || (req.body.admin.is_super_admin)){
@@ -267,7 +269,7 @@ const Emergency = async (req: Request, res: Response) => {
           from: process.env.VERIFIED_EMAIL,
           to: process.env.VERIFIED_EMAIL,
           bcc: users_email,
-          subject: `Announcement Regarding ${event_id}`,
+          subject: subject,
           html: `<html>
              <body style="width: 900px; padding: 0; margin: 0; box-sizing: border-box">
                 <div style="background: gray; padding: 4%">
