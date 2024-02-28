@@ -13,7 +13,8 @@ import {
   getAdminEvents,
   getUserCart,
   createUserVIAadmin,
-  getTotalUsers
+  getTotalUsers,
+  checkUser
 } from "../queries/adminQueries.js";
 import {
   EventIdValidator,
@@ -256,6 +257,14 @@ const GetUserCart = async(req: Request, res: Response) => {
   if(req.body.admin.is_admin){
     const {user_email} = req.body
     const client = await pool.connect()
+    const check = await client.query(checkUser, [user_email])
+    if(check.rows.length == 0){
+      client.release();
+      return res.status(400).json({
+        statusCode: 400,
+        body: { message: "User Not found" }
+      })
+    }
     const data = await client.query(getUserCart, [user_email])
     client.release()
     let cartItems: Record<string, Array<cartType>> = {};
@@ -299,6 +308,7 @@ const GetRegisterationsCount = async(req: Request, res: Response) => {
   if(req.body.admin.is_super_admin){
       const client = await pool.connect()
       const data = await client.query(getTotalUsers)
+      client.release()
       return res
         .status(200)
         .json({ statusCode: 200, body: { data: data.rows[0] } });

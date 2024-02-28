@@ -15,6 +15,7 @@ import {
   createUserValidator,
   emailValidator,
 } from "../validators/userValidators.js";
+import {checkUser} from "../queries/adminQueries.js";
 
 const GetUserDetails = async (req: Request, res: Response) => {
   const { email } = emailValidator.parse(req.body.user);
@@ -64,6 +65,14 @@ const CreateUser = async (req: Request, res: Response) => {
 const GetUserCart = async (req: Request, res: Response) => {
   const { email } = emailValidator.parse(req.body.user);
   const client = await pool.connect();
+  const check = await client.query(checkUser, [email])
+  if(check.rows.length == 0){
+    client.release();
+    return res.status(400).json({
+      statusCode: 400,
+      body: { message: "User Not found" }
+    })
+  }
   const data = await client.query(getCart, [email]);
   client.release()
   let cartItems: Record<string, Array<cartType>> = {};
