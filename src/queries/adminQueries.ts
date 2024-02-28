@@ -32,3 +32,4 @@ JOIN pass p ON e.pass_id = p.id
 WHERE ue.user_email= $1;
 `;
 export const createUserVIAadmin: string = `INSERT INTO users (name,email,phone_no,clg_name) VALUES ($1,$2,$3,$4)`
+export const getTotalUsers: string = `SELECT COUNT(*) AS totalRegisterations FROM users`

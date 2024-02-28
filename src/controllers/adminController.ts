@@ -12,7 +12,8 @@ import {
   insertEvents4Admin,
   getAdminEvents,
   getUserCart,
-  createUserVIAadmin
+  createUserVIAadmin,
+  getTotalUsers
 } from "../queries/adminQueries.js";
 import {
   EventIdValidator,
@@ -277,6 +278,19 @@ const CreateUser = async(req: Request, res:Response) => {
       .json({ statusCode: 403, body: { message: "Admin not Authorized" } });
 }
 
+const GetRegisterationsCount = async(req: Request, res: Response) => {
+  if(req.body.admin.is_super_admin){
+      const client = await pool.connect()
+      const data = await client.query(getTotalUsers)
+      return res
+        .status(200)
+        .json({ statusCode: 200, body: { data: data.rows[0] } });
+  }else
+    return res
+      .status(403)
+      .json({ statusCode: 403, body: { message: "Admin not Authorized" } });
+}
+
 export {
   UpdatePaid,
   VerifyPaid,
@@ -288,5 +302,6 @@ export {
   CreateEvent,
   EventAdminSignUp,
   GetUserCart,
-  CreateUser 
+  CreateUser,
+  GetRegisterationsCount
 };
