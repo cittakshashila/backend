@@ -22,9 +22,9 @@ const Paid = async (req: Request, res: Response) => {
         from: process.env.VERIFIED_EMAIL,
         to: email,
         subject: "Your Payment For Takshashila Was successfull",
-        html: `<html>
-           <body style="width: 1200px; padding: 0; margin: 0; box-sizing: border-box">
-              <div style="background: gray; padding: 4%">
+        html: `
+        <html>
+           <div style="box-sizing: border-box">
                  <table id="content" colspan="4" style="background: white; width: 100%">
                     <tr style="height: 15vh">
                        <td>&nbsp;</td>
@@ -33,8 +33,9 @@ const Paid = async (req: Request, res: Response) => {
                        </td>
                       <td>&nbsp;</td>
                     </tr>
-                    <tr style="font-size: 1rem">
-                       <td colspan="4" style="font-family: monospace; vertical-align: center; padding: 2em">
+                    <tr style="font-size: 1.2em" >
+                       <td colspan="4" style="font-family: monospace; vertical-align: center;
+                           padding: 2em">
                       <p>
                         Greetings,
                         <br><br>
@@ -50,50 +51,50 @@ const Paid = async (req: Request, res: Response) => {
                         <br><br>
                         Team TK
                           </p>
-                       <div style="font-family: monospace; font-weight: 500;width:930px;height:356.77px;">
-                          <div style="display: flex;max-width: 930px;max-height: 356.77px;">
-                             <div style="width:675px;height:356.77px;border-right:2px dashed #a0a0a0;border-radius: 15px;background: url('https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/tick.png');">
-                                <p style="margin:50px 0px 0px 25px;font-size:30px">
-                                   ${events[0].name}
-                                </p>
-                                <p style="font-size: 15px;margin: 6px 0px 0px 30px;">Boarding<br/>Date: ${curdate}</p>
-                                <p style="font-size: 15px;margin: 8px 0px 0px 30px;">from ${events[0].clg_name} to CIT</p>
-                                <p style="font-size: 30px;margin: 50px 0px 0px 30px;">${events[0].id.slice(0,8)}</p>
-                                <p style="font-size: 30px;margin: 30px 0px 0px 30px;">${type}</p>
+                    </tr>
+                    <tr>
+                        <td colspan=4 align="center">
+                       <div style="font-family: monospace;">
+                          <div style="display: flex;max-width: 750px;max-height: 277px;">
+                             <div style="width:70%;border-right:2px dashed#a0a0a0;border-radius: 15px;background:url('https://cdn.discordapp.com/attachments/1059412649512804353/1212409901184454717/tick_2.png?ex=65f1bbb5&is=65df46b5&hm=45832388175ed9a90af0f9194204ebda437e63399336d2542b33d1cc1b9c6719&');text-align: left">
+                                <p style="font-size: 20px;margin: 50px 0px 0px 5px;">${events[0].name}</p>
+                                <p style="font-size: 10px;margin: 6px 0px 0px 10px;">Boarding<br/>Date: ${curdate}</p>
+                                <p style="font-size: 10px;margin: 8px 0px 0px 10px;">from ${events[0].clg_name} to CIT</p>
+                                <p style="font-size: 20px;margin: 40px 0px 0px 10px;">${events[0].id.slice(0,8)}</p>
+                                <p style="font-size: 20px;margin: 30px 0px 0px 10px;">${type}</p>
                              </div>
-                             <div style="background: #ececec;border-radius: 15px;align-items: center;width: 255px;max-height: 356.77px;padding-top: 50px;">
-                                <p style="padding:0px 0px 0px 23.85px">
-                                <img alt="qr" width="207.29px" height="207.29px" src="cid:qr">
+                             <div style="background: #ececec;border-radius: 15px; width: 30%;padding: 40px 10px 40px 10px;">
+                                <p>
+                                <img alt="qr" width="172px" height="172px" src="cid:qr">
                                 </p>
-                                <p style="padding:0px 0px 0px 45px">
-                                <img src="https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/tklogo.png" alt="logo" width="165px" height="38px">
-                                </p>
+                                <img src="https://raw.githubusercontent.com/cittakshashila/backend/ses/docs/asserts/tklogo.png" alt="logo" width="136px" height="32px">
                              </div>
                           </div>
                        <div>
                        </td>
                     </tr>
                     <tr style="vertical-align: top">
-                       <td style="font-family: monospace; vertical-align: center; padding: 2em">
+                       <td style="font-family: monospace; vertical-align: middle; padding: 2em;
+                           width: 25%;">
                           <div style="text-align: justify">
                              <p style="margin: 4px"><b>contact</b></p>
                              <p style="margin: 2px">9150472413</p>
                              <p style="margin: 2px">8015929273</p>
                           </div>
                        </td>
-                       <td style="font-family: monospace; vertical-align: center; padding: 2em">
+                       <td style="font-family: monospace; vertical-align: middle; padding: 2em;  width: 25%;">
                           <div style="text-align: justify">
                              <p style="margin: 4px"><b>email</b></p>
                              <p style="margin: 2px">takshashila@citchennai.net</p>
                           </div>
                        </td>
-                       <td style="font-family: monospace; vertical-align: center; padding: 2em">
+                       <td style="font-family: monospace; vertical-align: middle; padding: 2em;  width: 25%;">
                           <div style="text-align: justify">
                              <p style="margin: 4px"><b>visit us</b></p>
                              <p style="margin: 2px">www.cittakshashila.in</p>
                           </div>
                        </td>
-                       <td style="font-family: monospace; vertical-align: center; padding: 2em">
+                       <td style="font-family: monospace; vertical-align: middle; padding: 2em;  width: 25%;">
                           <p style="margin: 4px"><b>socials</b></p>
                           <div style="display: flex;justify-content: left;margin: 4px;text-align: justify;">
                              <a href="https://www.facebook.com/cittakshaskila" >
@@ -120,7 +121,6 @@ const Paid = async (req: Request, res: Response) => {
                     </tr>
                  </table>
               </div>
-           </body>
         </html>
         `,
         attachments: [
